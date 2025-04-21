@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hunt Chess</title>
+  <script src="https://cdn.jsdelivr.net/npm/@farcade/game-sdk@latest/dist/index.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5ebdc;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 36px;
+    }
+    .buttons {
+      margin: 20px;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: #ffffff;
+    }
+    .chess-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      width: 480px;
+      margin: 20px auto;
+      border: 2px solid #333;
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .white {
+      background-color: #f0d9b5;
+    }
+    .black {
+      background-color: #b58863;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #333;
+    }
+    .logo {
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>HUNT CHESS</h1>
+  <div class="buttons">
+    <button onclick="resetGame()">PLAYER VS PLAYER</button>
+    <button onclick="resetGame()">PLAYER VS COMPUTER</button>
+  </div>
+
+  <div class="chess-board" id="board"></div>
+
+  <div class="footer">White to move</div>
+
+  <div class="logo">
+    <img src="logo.png" alt="City logo" width="80">
+  </div>
+
+  <script>
+    const board = document.getElementById("board");
+
+    const pieces = {
+      r: "♜", n: "♞", b: "♝", q: "♛", k: "♚", p: "♟",
+      R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔", P: "♙"
+    };
+
+    const layout = [
+      ["r", "n", "b", "q", "k", "b", "n", "r"],
+      ["p", "p", "p", "p", "p", "p", "p", "p"],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["", "", "", "", "", "", "", ""],
+      ["P", "P", "P", "P", "P", "P", "P", "P"],
+      ["R", "N", "B", "Q", "K", "B", "N", "R"]
+    ];
+
+    function renderBoard() {
+      board.innerHTML = "";
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement("div");
+          square.classList.add("square");
+          square.classList.add((row + col) % 2 === 0 ? "white" : "black");
+          const piece = layout[row][col];
+          square.textContent = pieces[piece] || "";
+          board.appendChild(square);
+        }
+      }
+    }
+
+    function resetGame() {
+      renderBoard();
+      console.log("Game reset");
+      window.FarcadeSDK.singlePlayer.actions.ready();
+    }
+
+    function gameOver(scoreValue) {
+      window.FarcadeSDK.singlePlayer.actions.gameOver({ score: scoreValue });
+    }
+
+    function hapticFeedback() {
+      window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+    }
+
+    window.FarcadeSDK.on('play_again', () => {
+      resetGame();
+    });
+
+    window.FarcadeSDK.on('toggle_mute', (data) => {
+      console.log("Mute status:", data.isMuted);
+    });
+
+    renderBoard();
+    window.FarcadeSDK.singlePlayer.actions.ready();
+  </script>
+</body>
+</html>
